@@ -17,6 +17,7 @@ export async function getStaticProps() {
   const filePath = path.join(process.cwd(), "data", "data.json");
   const jsonData = await fs.readFile(filePath);
   const data = JSON.parse(jsonData);
+  if (!data.products.length) return { notFound: true };
 
   return {
     props: {

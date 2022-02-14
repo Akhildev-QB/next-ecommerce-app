@@ -1,4 +1,5 @@
 import fs from "fs/promises";
+import Link from "next/link";
 import path from "path";
 
 const HomePage = (props) => {
@@ -7,24 +8,24 @@ const HomePage = (props) => {
   return (
     <ul>
       {products.map((product) => (
-        <li key={product.id}>{product.name}</li>
+        <li key={product.id}>
+          <Link href={`/products/${product.id}`}>{product.name}</Link>
+        </li>
       ))}
     </ul>
   );
 };
 
-export async function getStaticProps() {
+const getData = async () => {
   const filePath = path.join(process.cwd(), "data", "data.json");
   const jsonData = await fs.readFile(filePath);
-  const data = JSON.parse(jsonData);
-  if (!data.products.length) return { notFound: true };
+  const { products } = JSON.parse(jsonData);
+  return products;
+};
 
-  return {
-    props: {
-      products: data.products,
-    },
-    revalidate: 60,
-  };
+export async function getStaticProps() {
+  const products = await getData();
+  return { props: { products }, revalidate: 60 };
 }
 
 export default HomePage;
